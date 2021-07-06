@@ -99,7 +99,7 @@ var sdk = {
       robots.sort(function (a, b) {
         return b.batteryLevel - a.batteryLevel;
       });
-      console.log('sorted by battery:', robots)
+      console.log("sorted by battery:", robots);
     } catch (err) {
       throw new Error("Error sorting list of robots by battery level:", err);
     }
@@ -117,6 +117,29 @@ var sdk = {
     } catch (err) {
       throw new Error("Error filtering list of robots by distance:", err);
     }
+  },
+
+  /**
+   *
+   * @param {number} x - The X coordinate of a point
+   * @param {number} y - The Y coordinate of a point
+   * @param {number} withinDistance - Prioritize robots within this distance by the highest battery level rather than distance
+   * @returns {Robot | EnrichedRobot} The closest available 'robot' object based on 
+   */
+  findRobot: async function (x, y, withinDistance) {
+    // fetch list of available robots
+    let robots = await this.fetchAvailableRobots();
+    // Enrich the list of robots with the distance to the request's xy-coordinate
+    robots = this.enrichRobotList(robots, x, y);
+    // Sort the list of enriched robots by closest distance to the xy-coordinate
+    this.sortByDistance(robots);
+    // Check for robots available within 10 units of distance
+    let closestRobots = this.filterByDistance(robots, withinDistance);
+    console.log("closest robots:", closestRobots);
+    // If there are multiple robots within the given units of distance, return the robot with the most battery
+    if (!closestRobots || closestRobots.length > 1) return this.sortByBattery(closestRobots)[0];
+    // Otherwise, return the closest robot
+    else return closestRobots[0];
   },
 };
 
