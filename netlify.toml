@@ -1,0 +1,10 @@
+[build]
+  base = ""
+  publish = "."
+  functions = "functions"
+
+[[redirects]]
+  from = "/svt/v1/*"
+  to = "/.netlify/functions/v1-:splat"
+  status = 200
+  force = true
