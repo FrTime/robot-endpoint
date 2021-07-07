@@ -25,7 +25,7 @@ var sdk = {
    */
   fetchAvailableRobots: async function () {
     try {
-      // 
+      //
       return await fetch("https://60c8ed887dafc90017ffbd56.mockapi.io/robots", {
         httpMethod: "GET",
       })
@@ -129,17 +129,21 @@ var sdk = {
     // fetch list of available robots
     let robots = await this.fetchAvailableRobots();
     // Filter out any robots that do not have battery
-    robots.filter(robot => robot.batteryLevel > 0);
+    robots.filter((robot) => robot.batteryLevel > 0);
     // Enrich the list of robots with the distance to the request's xy-coordinate
     robots = this.enrichRobotList(robots, x, y);
     // Sort the list of enriched robots by closest distance to the xy-coordinate
     this.sortByDistance(robots);
-    // Check for robots available within 10 units of distance
+    // Check for robots available within given units of distance
     let closestRobots = this.filterByDistance(robots, withinDistance);
     // If there are multiple robots within the given units of distance, sort by the most battery
-    if (!closestRobots || closestRobots.length > 1) this.sortByBattery(closestRobots);
+    if (closestRobots && closestRobots.length > 1) {
+      this.sortByBattery(closestRobots);
+      // Use the set of closest robots
+      robots = closestRobots;
+    }
     // Then return the best available robot
-    return closestRobots[0];
+    return robots[0];
   },
   // for testing porpoises:
   robotList: [
