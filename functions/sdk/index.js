@@ -26,7 +26,7 @@ var sdk = {
   fetchAvailableRobots: async function () {
     try {
       // 
-      return await fetch("https://svtrobotics.free.beeceptor.com/robots", {
+      return await fetch("https://60c8ed887dafc90017ffbd56.mockapi.io/robots", {
         httpMethod: "GET",
       })
         .then((res) => res.json())
@@ -128,6 +128,8 @@ var sdk = {
   findRobot: async function (x, y, withinDistance) {
     // fetch list of available robots
     let robots = await this.fetchAvailableRobots();
+    // Filter out any robots that do not have battery
+    robots.filter(robot => robot.batteryLevel > 0);
     // Enrich the list of robots with the distance to the request's xy-coordinate
     robots = this.enrichRobotList(robots, x, y);
     // Sort the list of enriched robots by closest distance to the xy-coordinate
